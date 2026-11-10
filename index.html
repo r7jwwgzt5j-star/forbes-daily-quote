@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body {
+    margin: 0;
+    padding: 12px;
+    background: transparent;
+    font-family: Georgia, serif;
+    text-align: center;
+    color: inherit;
+  }
+
+  #quote {
+    font-size: 22px;
+    line-height: 1.5;
+    font-style: italic;
+    overflow-wrap: break-word;
+  }
+
+  #author {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    margin-top: 12px;
+    opacity: 0.7;
+  }
+</style>
+</head>
+<body>
+
+<div id="quote">Your daily quote will appear here.</div>
+<div id="author"></div>
+
+<script>
+async function loadQuote() {
+  try {
+    const response = await fetch('./quote.json?t=' + Date.now());
+    if (!response.ok) throw new Error('Quote unavailable');
+
+    const data = await response.json();
+
+    document.getElementById('quote').textContent =
+      '“' + data.quote + '”';
+
+    document.getElementById('author').textContent =
+      '— ' + data.author;
+  } catch (error) {
+    document.getElementById('quote').textContent =
+      'Your daily quote is being updated.';
+  }
+}
+
+loadQuote();
+</script>
+
+</body>
+</html>
