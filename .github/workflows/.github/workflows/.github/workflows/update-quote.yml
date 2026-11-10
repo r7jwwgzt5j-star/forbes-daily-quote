@@ -1,0 +1,46 @@
+
+name: Check Forbes quote source
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 13 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  check-source:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Forbes
+        run: |
+          python -m pip install requests beautifulsoup4
+
+          python - <<'PY'
+          import requests
+          from bs4 import BeautifulSoup
+
+          url = "https://www.forbes.com/quotes/"
+
+          response = requests.get(
+              url,
+              headers={"User-Agent": "Mozilla/5.0"},
+              timeout=30
+          )
+
+          print("Forbes response:", response.status_code)
+          response.raise_for_status()
+
+          soup = BeautifulSoup(response.text, "html.parser")
+          text = soup.get_text(" ", strip=True)
+
+          index = text.find("Quote of the Day")
+
+          if index == -1:
+              raise Exception("Quote section not found")
+
+          print("Forbes quote section:")
+          print(text[index:index + 1200])
+          PY
